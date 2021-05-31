@@ -1,0 +1,273 @@
+unit = {
+    line* ~ EOI
+}
+
+line = {
+    WHITESPACE* ~
+    ( inst
+    | pseudo_inst
+    | pseudo
+    | label
+    ) }
+
+inst = {
+    inst_keyword ~ (inst_expr ~ ("," ~ inst_expr)*)?
+}
+
+pseudo_inst = {
+    pcode_keyword ~ (inst_expr ~ ("," ~ inst_expr)*)?
+}
+
+pseudo = {
+    "." ~ pseudo_ops_keyword ~ (expr ~ (","? ~ W* ~ expr)*)?
+}
+
+W = @
+	{ " "
+    | "\t"
+}
+
+label = { symbol ~ ":" }
+
+inst_expr = {
+    registers | offset
+}
+
+offset = {
+	(rf | symbol) ~ ("(" ~ registers ~ ")")?
+}
+
+expr = { str | num | sym }
+
+rf = {
+    "%" ~ rf_keyword ~ "(" ~ symbol ~ ")"
+}
+
+symbol = { num | sym }
+
+sym = {
+	r_sym ~ (offset_op ~ num)?
+}
+
+offset_op = {
+	("+"|"-")
+}
+
+r_sym = $ { (ASCII_ALPHA_LOWER | "_" | "$" | ".") ~ (ASCII_ALPHANUMERIC | "_" | "$" | ".")* }
+
+ignore =
+	{ WHITESPACE
+    | NEWLINE
+	| inst_keyword
+	| registers
+	| "(" | ")"
+	| "+" | "-"
+	| "%" | ":"
+}
+
+extend_char = @{
+    "$" | "_" | "."
+}
+
+
+
+num = @{ ("+" | "-")? ~ "0x"? ~ ASCII_DIGIT+ ~ "b"? }
+
+//num = $ { number_dec
+//               | number_oct
+//               | number_bin
+//               | number_hex
+//               }
+
+number_dec = _ { ("+" | "-")? ~ ASCII_DIGIT+ }
+
+number_oct = _ { ("+" | "-")? ~ "0o" ~ ASCII_OCT_DIGIT+ }
+
+number_hex = _ { ("+" | "-")? ~ "0x" ~ ASCII_HEX_DIGIT+ }
+
+number_bin = _ { ("+" | "-")? ~ "0b" ~ ASCII_BIN_DIGIT+ }
+
+str = {
+    "\"" ~ (!"\"" ~ ANY)+ ~ "\""
+}
+
+inst_keyword =
+    { "addi"
+    | "xori"
+    | "ori"
+    | "andi"
+    | "slli"
+    | "srli"
+    | "srai"
+    | "slti"
+    | "sltiu"
+    | "add"
+    | "sub"
+    | "xor"
+    | "or"
+    | "and"
+    | "sll"
+    | "srl"
+    | "sra"
+    | "slt"
+    | "sltu"
+    | "lb"
+    | "lh"
+    | "lw"
+    | "lbu"
+    | "lhu"
+    | "sb"
+    | "sh"
+    | "sw"
+    | "beq"
+    | "bne"
+    | "blt"
+    | "bge"
+    | "bltu"
+    | "bgeu"
+    | "jal"
+    | "jalr"
+    | "lui"
+    | "auipc"
+    | "ecall"
+    | "ebreak"
+    }
+
+pcode_keyword = @
+    { "la"
+    | "l" ~ ("b"|"h"|"w"|"d")
+    | "s" ~ ("b"|"h"|"w"|"d")
+    | "fl" ~ ("w"|"d")
+    | "fs" ~ ("w"|"d")
+    | "nop"
+    | "li"
+    | "mv"
+    | "not"
+    | "neg"
+    | "negw"
+    | "sext.w"
+    | "seqz"
+    | "snez"
+    | "sltz"
+    | "sgtz"
+    | "fmv.s"
+    | "fabs.s"
+    | "fneg.s"
+    | "fmv.d"
+    | "fabs.d"
+    | "fneg.d"
+    | "beqz"
+    | "bnez"
+    | "blez"
+    | "bgez"
+    | "bltz"
+    | "bgtz"
+    | "bgt"
+    | "ble"
+    | "bgtu"
+    | "bleu"
+    | "j"
+    | "jal"
+    | "jr"
+    | "jalr"
+    | "ret"
+    | "call"
+    | "tail"
+    }
+
+rf_keyword = @
+    { "hi"
+    | "lo"
+    | "pcrel_hi"
+    | "pcrel_lo"
+    | "tprel_hiE"
+    | "tprel_loE"
+    | "tprel_addE"
+    | "got_pcrel_hi"
+    | "tls_ie_pcrel_hiS"
+    | "tls_gd_pcrel_hiS"
+    }
+
+pseudo_ops_keyword = @
+    { "attribute"
+    | "align"
+    | "file"
+    | "globl"
+    | "local"
+    | "comm"
+    | "common"
+    | "ident"
+    | "section"
+    | "size"
+    | "data"
+    | "rodata"
+    | "bss"
+    | "string"
+    | "asciz"
+    | "equ"
+    | "macro"
+    | "endm"
+    | "option"
+    | "byte"
+    | "2byte"
+    | "half"
+    | "short"
+    | "4byte"
+    | "word"
+    | "long"
+    | "8byte"
+    | "dword"
+    | "quad"
+    | "dtprelword"
+    | "dtpreldword"
+    | "sleb128"
+    | "uleb128"
+    | "p2align"
+    | "balign"
+    | "zero"
+    }
+
+registers = @
+    { "x0"  | "zero"
+    | "x1"  | "ra"
+    | "x2"  | "sp"
+    | "x3"  | "gp"
+    | "x4"  | "tp"
+    | "x5"  | "t0"
+    | "x6"  | "t1"
+    | "x7"  | "t2"
+    | "x8"  | "s0"
+    | "x9"  | "s1"
+    | "x10" | "a0"
+    | "x11" | "a1"
+    | "x12" | "a2"
+    | "x13" | "a3"
+    | "x14" | "a4"
+    | "x15" | "a5"
+    | "x16" | "a6"
+    | "x17" | "a7"
+    | "x18" | "s2"
+    | "x19" | "s3"
+    | "x20" | "s4"
+    | "x21" | "s5"
+    | "x22" | "s6"
+    | "x23" | "s7"
+    | "x24" | "s8"
+    | "x25" | "s9"
+    | "x26" | "s10"
+    | "x27" | "s11"
+    | "x28" | "t3"
+    | "x29" | "t4"
+    | "x30" | "t5"
+    | "x31" | "t6"
+    }
+
+COMMENT = _{ "#" ~ (!NEWLINE ~ ANY)* ~ NEWLINE }
+
+WHITESPACE = _
+    { " "
+	//| ","
+	| "\t"
+	| WHITE_SPACE
+	| NEWLINE
+	}
