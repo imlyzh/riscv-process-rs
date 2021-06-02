@@ -4,10 +4,10 @@ unit = {
 
 line = {
     WHITESPACE* ~
-    ( inst
+    ( label
+    | inst
     | pseudo_inst
     | pseudo
-    | label
     ) }
 
 inst = {
@@ -19,7 +19,7 @@ pseudo_inst = {
 }
 
 pseudo = {
-    "." ~ pseudo_ops_keyword ~ (expr ~ (","? ~ W* ~ expr)*)?
+    "." ~ sym ~ (expr ~ (","? ~ W* ~ expr)*)?
 }
 
 W = @

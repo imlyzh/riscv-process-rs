@@ -61,6 +61,37 @@ pub enum RfKeyword {
     TlsGdPcrelHis,
 }
 
+macro_rules! transform_rf_keyword {
+    ($i: expr, $s: expr, $r: expr) => {
+        if $i == $s {
+            return Some($r)
+        }
+    };
+}
+
+impl From<&str> for RfKeyword {
+    fn from(i: &str) -> Self {
+        RfKeyword::from_sym(i).expect("invalid riscv assembler relocation functions")
+    }
+}
+
+impl RfKeyword {
+
+    #[inline]
+    fn from_sym(i: &str) -> Option<Self> {
+        transform_rf_keyword!(i, "hi", RfKeyword::Hi);
+        transform_rf_keyword!(i, "lo", RfKeyword::Lo);
+        transform_rf_keyword!(i, "pcrel_hi", RfKeyword::PcrelHi);
+        transform_rf_keyword!(i, "pcrel_lo", RfKeyword::PcrelLo);
+        transform_rf_keyword!(i, "tprel_hi_e", RfKeyword::TprelHiE);
+        transform_rf_keyword!(i, "tprel_lo_e", RfKeyword::TprelLoE);
+        transform_rf_keyword!(i, "got_pcrel_hi", RfKeyword::GotPcrelHi);
+        transform_rf_keyword!(i, "tls_ie_pcrel_hi_s", RfKeyword::TlsIePcrelHiS);
+        transform_rf_keyword!(i, "tls_gd_pcrel_hi_s", RfKeyword::TlsGdPcrelHis);
+        None
+    }
+}
+
 #[derive(Debug)]
 pub struct Symbol (pub String, pub u64);
 
@@ -79,6 +110,7 @@ impl Register {
         self.0
     }
 
+    #[inline]
     pub fn from_sym(i: &str) -> Option<Self> {
         let record = [
             vec!["x0", "zero"],
