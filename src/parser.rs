@@ -118,7 +118,7 @@ impl ParseFrom<Rule> for Expr {
         let pair = pair.into_inner().next().unwrap();
         match pair.as_rule() {
             Rule::sym => {
-                Expr::Sym(Symbol::parse_from(pair))
+                Expr::Sym(pair.as_str().to_string())
             }
             Rule::str => {
                 Expr::Str(pair.as_str().to_string())
@@ -134,6 +134,7 @@ impl ParseFrom<Rule> for Expr {
 impl ParseFrom<Rule> for Pseudo {
     fn parse_from(pair: Pair<Rule>) -> Self {
         debug_assert_eq!(pair.as_rule(), Rule::pseudo);
+        let pair = pair.into_inner().next().unwrap();
         let mut pairs = pair.into_inner();
         let pseudo_op = pairs.next().unwrap().as_str();
         let exprs = pairs.map(Expr::parse_from);
@@ -167,9 +168,14 @@ impl ParseFrom<Rule> for RawNode {
 pub fn parse(i: &str) -> Result<Vec<RawNode>, Error<Rule>> {
     let r: Result<Vec<Pairs<Rule>>, Error<Rule>> = i.split('\n')
         .map(str::trim)
-        .map(|x| RiscVAsm::parse(Rule::unit, x)).collect();
+        .map(|x| RiscVAsm::parse(Rule::line, x)).collect();
     let r = r?;
-    let r = r.iter()
-        .flat_map(|f| f.clone().map(RawNode::parse_from)).collect();
+    let r = r.into_iter()
+        .flatten()
+        .filter(|pair| {
+            debug_assert_eq!(pair.as_rule(), Rule::line);
+            pair.clone().into_inner().next().is_some()
+        })
+        .map(RawNode::parse_from).collect();
     Ok(r)
 }

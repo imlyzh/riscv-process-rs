@@ -1,4 +1,3 @@
-use std::convert::TryFrom;
 
 
 #[derive(Debug)]
@@ -23,7 +22,7 @@ pub struct Pseudo(pub String, pub Vec<Expr>);
 pub enum Expr {
     Str(String),
     Num(i64),
-    Sym(Symbol)
+    Sym(String),
 }
 
 #[derive(Debug)]

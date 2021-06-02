@@ -1,6 +1,3 @@
-unit = {
-    line* ~ EOI
-}
 
 line = {
     WHITESPACE* ~
@@ -8,7 +5,7 @@ line = {
     | inst
     | pseudo_inst
     | pseudo
-    ) }
+    )? }
 
 inst = {
     inst_keyword ~ (inst_expr ~ ("," ~ inst_expr)*)?
@@ -18,9 +15,25 @@ pseudo_inst = {
     pcode_keyword ~ (inst_expr ~ ("," ~ inst_expr)*)?
 }
 
-pseudo = {
-    "." ~ sym ~ (expr ~ (","? ~ W* ~ expr)*)?
+pseudo =
+    { file_pseudo
+    | generic_pseudo
+    | other_pseudo
 }
+
+file_pseudo = {
+    "." ~ file_ ~ expr ~ expr?
+}
+
+generic_pseudo = {
+    "." ~ generic_pseudo_ops ~ (expr ~ ("," ~ expr)*)?
+}
+
+other_pseudo = {
+    "." ~ sym ~ (expr ~ ("," ~ expr)*)?
+}
+
+file_ = ${ "file" }
 
 W = @
 	{ " "
@@ -188,10 +201,9 @@ rf_keyword = @
     | "tls_gd_pcrel_hiS"
     }
 
-pseudo_ops_keyword = @
+generic_pseudo_ops = @
     { "attribute"
     | "align"
-    | "file"
     | "globl"
     | "local"
     | "comm"
