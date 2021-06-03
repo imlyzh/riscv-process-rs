@@ -11,7 +11,31 @@ inst = {
     inst_keyword ~ (inst_expr ~ ("," ~ inst_expr)*)?
 }
 
-pseudo_inst = {
+pseudo_inst =
+    { io_pinst
+    | generic_pseudo_inst
+}
+
+io_pinst = {
+    io_ ~ registers ~ "," ~ symbol
+}
+
+io_ = @
+    { load
+    | store
+    | float_load
+    | float_store
+}
+
+load = @{ "l" ~ ("b"|"h"|"w"|"d") }
+
+store = @{ "s" ~ ("b"|"h"|"w"|"d") }
+
+float_load = @{ "fl" ~ ("w"|"d") }
+
+float_store = @{ "fs" ~ ("w"|"d") }
+
+generic_pseudo_inst = {
     pcode_keyword ~ (inst_expr ~ ("," ~ inst_expr)*)?
 }
 
@@ -104,7 +128,7 @@ str = {
     "\"" ~ (!"\"" ~ ANY)+ ~ "\""
 }
 
-inst_keyword =
+inst_keyword = @
     { "addi"
     | "xori"
     | "ori"
@@ -148,10 +172,6 @@ inst_keyword =
 
 pcode_keyword = @
     { "la"
-    | "l" ~ ("b"|"h"|"w"|"d")
-    | "s" ~ ("b"|"h"|"w"|"d")
-    | "fl" ~ ("w"|"d")
-    | "fs" ~ ("w"|"d")
     | "nop"
     | "li"
     | "mv"

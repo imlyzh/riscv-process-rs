@@ -105,10 +105,25 @@ impl ParseFrom<Rule> for Instruction {
 impl ParseFrom<Rule> for PseudoInst {
     fn parse_from(pair: Pair<Rule>) -> Self {
         debug_assert_eq!(pair.as_rule(), Rule::pseudo_inst);
-        let mut pairs = pair.into_inner();
-        let inst = pairs.next().unwrap().as_str();
-        let exprs = pairs.map(InstExpr::parse_from);
-        PseudoInst(Instruction(inst.to_string(), exprs.collect()))
+        let pair = pair.into_inner().next().unwrap();
+        if let Rule::generic_pseudo_inst = pair.as_rule() {
+            let mut pairs = pair.into_inner();
+            let inst = pairs.next().unwrap().as_str();
+            let exprs = pairs.map(InstExpr::parse_from);
+            PseudoInst(Instruction(inst.to_string(), exprs.collect()))
+        } else if let Rule::io_pinst = pair.as_rule() {
+            let mut pairs = pair.into_inner();
+            let inst = pairs.next().unwrap().as_str();
+            let reg = pairs.next().unwrap();
+            let sym = pairs.next().unwrap();
+            let reg = InstExpr::Reg(Register::parse_from(reg));
+            let sym = InstExpr::RealTimeOffset(Offset::Address(
+                Symbol::parse_from(sym), None
+            ));
+            PseudoInst(Instruction(inst.to_string(), vec![reg, sym]))
+        } else {
+            unreachable!()
+        }
     }
 }
 
@@ -173,7 +188,6 @@ pub fn parse(i: &str) -> Result<Vec<RawNode>, Error<Rule>> {
     let r = r.into_iter()
         .flatten()
         .filter(|pair| {
-            debug_assert_eq!(pair.as_rule(), Rule::line);
             pair.clone().into_inner().next().is_some()
         })
         .map(RawNode::parse_from).collect();
