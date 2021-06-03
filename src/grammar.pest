@@ -2,9 +2,9 @@
 line = {
     WHITESPACE* ~
     ( label
-    | inst
-    | pseudo_inst
     | pseudo
+    | pseudo_inst
+    | inst
     )? }
 
 inst = {

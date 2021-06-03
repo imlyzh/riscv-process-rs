@@ -1,13 +1,13 @@
 
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Node {
     Label(Label),
     Inst(Instruction),
     PseudoOps(Pseudo)
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum RawNode {
     Label(Label),
     Inst(Instruction),
@@ -15,39 +15,39 @@ pub enum RawNode {
     PseudoOps(Pseudo)
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Pseudo(pub String, pub Vec<Expr>);
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Expr {
     Str(String),
     Num(i64),
     Sym(String),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct PseudoInst(pub Instruction);
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Instruction(pub String, pub Vec<InstExpr>);
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum InstExpr {
     Reg(Register),
     RealTimeOffset(Offset),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Offset {
     Rf(Rf, Option<Register>),
-    Address(Symbol, Option<Register>),
+    Imm(Symbol, Option<Register>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Rf(pub RfKeyword, pub Symbol);
 
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum RfKeyword {
     Hi,
     Lo,
@@ -91,10 +91,10 @@ impl RfKeyword {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Symbol (pub String, pub u64);
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Register(u8);
 
 impl Register {
@@ -163,5 +163,5 @@ impl From<&str> for Register {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Label (pub Symbol);

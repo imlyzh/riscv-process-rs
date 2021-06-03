@@ -73,7 +73,7 @@ impl ParseFrom<Rule> for Offset {
         let pair = pairs.next().unwrap();
         let right = pairs.next().map(Register::parse_from);
         match pair.as_rule() {
-            Rule::symbol => Offset::Address(Symbol::parse_from(pair), right),
+            Rule::symbol => Offset::Imm(Symbol::parse_from(pair), right),
             Rule::rf => Offset::Rf(Rf::parse_from(pair), right),
             _ => unreachable!()
         }
@@ -117,7 +117,7 @@ impl ParseFrom<Rule> for PseudoInst {
             let reg = pairs.next().unwrap();
             let sym = pairs.next().unwrap();
             let reg = InstExpr::Reg(Register::parse_from(reg));
-            let sym = InstExpr::RealTimeOffset(Offset::Address(
+            let sym = InstExpr::RealTimeOffset(Offset::Imm(
                 Symbol::parse_from(sym), None
             ));
             PseudoInst(Instruction(inst.to_string(), vec![reg, sym]))
