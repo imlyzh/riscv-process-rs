@@ -14,7 +14,8 @@ impl PseudoInst {
                 Instruction("addi".to_string(), vec![rd.clone(), rd, sym]),
             ];
         }
-        if ["lb", "lh", "lw", "ld"].contains(&&*i) {
+        let load_global = ["lb", "lh", "lw", "ld"];
+        if load_global.contains(&&*i) {
             let rd = next_(&mut exprs);
             let sym = next_(&mut exprs);
             return vec![
@@ -22,9 +23,8 @@ impl PseudoInst {
                 Instruction(i, vec![rd.clone(), combinat_offset(sym, rd)]),
             ];
         }
-        if ["sb", "sh", "sw", "sd",
-            "flw", "fld",
-            "fsw", "fsd"].contains(&&*i) {
+        let store_global = ["sb", "sh", "sw", "sd", "flw", "fld", "fsw", "fsd"];
+        if store_global.contains(&&*i) {
             let rd = next_(&mut exprs);
             let sym = next_(&mut exprs);
             let rt = next_(&mut exprs);
@@ -41,7 +41,38 @@ impl PseudoInst {
                     create_imm("0")]),
             ];
         }
-        // li rd, immediate
+        if i == "li" {
+            let rd = next_(&mut exprs);
+            let imm_str = next_(&mut exprs);
+            let imm_str = if let InstExpr::RealTimeOffset(x) = imm_str {
+                x
+            } else {
+                unreachable!()
+            };
+            let imm_str = if let Offset::Imm(x, _) = imm_str {
+                x
+            } else {
+                unreachable!()
+            };
+            let imm_str = imm_str.0;
+            let imm = imm_str.parse::<i32>().unwrap();
+            let signed_i12: i32 = 2i32.pow(11); // [-2048, 2047]
+            let i12 = signed_i12 * 2;
+            if signed_i12 -1 >= imm && imm >= -signed_i12 {
+                return vec![Instruction("addi".to_string(), vec![rd.clone(), create_imm(&imm_str)])];
+            } else {
+                let mut lui_imm = imm / i12;
+                let mut add_imm = imm % i12;
+                if add_imm >= signed_i12 {
+                    lui_imm += 1;
+                    add_imm -= i12;
+                }
+                return vec![
+                    Instruction("lui".to_string(), vec![rd.clone(), create_imm(&lui_imm.to_string())]),
+                    Instruction("addi".to_string(), vec![rd.clone(), create_imm(&add_imm.to_string())])
+                ];
+            }
+        }
         if i == "mv" {
             let rd = next_(&mut exprs);
             let rs = next_(&mut exprs);
