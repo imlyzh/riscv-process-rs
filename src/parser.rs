@@ -1,9 +1,8 @@
-use pest::{Parser, error::Error};
 use pest::iterators::{Pair, Pairs};
+use pest::{error::Error, Parser};
 use pest_derive::*;
 
 use crate::node::*;
-
 
 #[derive(Parser)]
 #[grammar = "./grammar.pest"]
@@ -36,10 +35,7 @@ impl ParseFrom<Rule> for Rf {
         let mut pairs = pair.into_inner();
         let keyword = pairs.next().unwrap();
         let symbol = pairs.next().unwrap();
-        Self(
-            RfKeyword::parse_from(keyword),
-            Symbol::parse_from(symbol)
-        )
+        Self(RfKeyword::parse_from(keyword), Symbol::parse_from(symbol))
     }
 }
 
@@ -56,12 +52,10 @@ impl ParseFrom<Rule> for Symbol {
                 if offset.is_none() {
                     return Self(sym.as_str().to_string(), 0);
                 }
-                let offset = offset.unwrap()
-                    .as_str()
-                    .parse().unwrap();
+                let offset = offset.unwrap().as_str().parse().unwrap();
                 Self(sym.as_str().to_string(), offset)
-            },
-            _ => unreachable!()
+            }
+            _ => unreachable!(),
         }
     }
 }
@@ -75,7 +69,7 @@ impl ParseFrom<Rule> for Offset {
         match pair.as_rule() {
             Rule::symbol => Offset::Imm(Symbol::parse_from(pair), right),
             Rule::rf => Offset::Rf(Rf::parse_from(pair), right),
-            _ => unreachable!()
+            _ => unreachable!(),
         }
     }
 }
@@ -87,7 +81,7 @@ impl ParseFrom<Rule> for InstExpr {
         match pair.as_rule() {
             Rule::registers => InstExpr::Reg(Register::parse_from(pair)),
             Rule::offset => InstExpr::RealTimeOffset(Offset::parse_from(pair)),
-            _ => unreachable!()
+            _ => unreachable!(),
         }
     }
 }
@@ -117,9 +111,7 @@ impl ParseFrom<Rule> for PseudoInst {
             let reg = pairs.next().unwrap();
             let sym = pairs.next().unwrap();
             let reg = InstExpr::Reg(Register::parse_from(reg));
-            let sym = InstExpr::RealTimeOffset(Offset::Imm(
-                Symbol::parse_from(sym), None
-            ));
+            let sym = InstExpr::RealTimeOffset(Offset::Imm(Symbol::parse_from(sym), None));
             PseudoInst(Instruction(inst.to_string(), vec![reg, sym]))
         } else {
             unreachable!()
@@ -132,16 +124,10 @@ impl ParseFrom<Rule> for Expr {
         debug_assert_eq!(pair.as_rule(), Rule::expr);
         let pair = pair.into_inner().next().unwrap();
         match pair.as_rule() {
-            Rule::sym => {
-                Expr::Sym(pair.as_str().to_string())
-            }
-            Rule::str => {
-                Expr::Str(pair.as_str().to_string())
-            }
-            Rule::num => {
-                Expr::Num(pair.as_str().parse().unwrap())
-            }
-            _ => unreachable!()
+            Rule::sym => Expr::Sym(pair.as_str().to_string()),
+            Rule::str => Expr::Str(pair.as_str().to_string()),
+            Rule::num => Expr::Num(pair.as_str().parse().unwrap()),
+            _ => unreachable!(),
         }
     }
 }
@@ -174,22 +160,23 @@ impl ParseFrom<Rule> for RawNode {
             Rule::pseudo_inst => RawNode::PseudoInst(PseudoInst::parse_from(pair)),
             Rule::pseudo => RawNode::PseudoOps(Pseudo::parse_from(pair)),
             Rule::label => RawNode::Label(Label::parse_from(pair)),
-            _ => unreachable!()
+            _ => unreachable!(),
         }
     }
 }
 
-
 pub fn parse(i: &str) -> Result<Vec<RawNode>, Error<Rule>> {
-    let r: Result<Vec<Pairs<Rule>>, Error<Rule>> = i.split('\n')
+    let r: Result<Vec<Pairs<Rule>>, Error<Rule>> = i
+        .split('\n')
         .map(str::trim)
-        .map(|x| RiscVAsm::parse(Rule::line, x)).collect();
+        .map(|x| RiscVAsm::parse(Rule::line, x))
+        .collect();
     let r = r?;
-    let r = r.into_iter()
+    let r = r
+        .into_iter()
         .flatten()
-        .filter(|pair| {
-            pair.clone().into_inner().next().is_some()
-        })
-        .map(RawNode::parse_from).collect();
+        .filter(|pair| pair.clone().into_inner().next().is_some())
+        .map(RawNode::parse_from)
+        .collect();
     Ok(r)
 }

@@ -16,7 +16,7 @@ pub fn combinat_offset(i: InstExpr, i1: InstExpr) -> InstExpr {
     if let InstExpr::RealTimeOffset(x) = i {
         let r = match x {
             Offset::Rf(v, _) => Offset::Rf(v, Some(reg)),
-            Offset::Imm(v, _) => Offset::Imm(v, Some(reg))
+            Offset::Imm(v, _) => Offset::Imm(v, Some(reg)),
         };
         return InstExpr::RealTimeOffset(r);
     }
