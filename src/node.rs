@@ -1,10 +1,8 @@
-
-
 #[derive(Debug, Clone)]
 pub enum Node {
     Label(Label),
     Inst(Instruction),
-    PseudoOps(Pseudo)
+    PseudoOps(Pseudo),
 }
 
 #[derive(Debug, Clone)]
@@ -12,7 +10,7 @@ pub enum RawNode {
     Label(Label),
     Inst(Instruction),
     PseudoInst(PseudoInst),
-    PseudoOps(Pseudo)
+    PseudoOps(Pseudo),
 }
 
 #[derive(Debug, Clone)]
@@ -63,7 +61,7 @@ pub enum RfKeyword {
 macro_rules! transform_rf_keyword {
     ($i: expr, $s: expr, $r: expr) => {
         if $i == $s {
-            return Some($r)
+            return Some($r);
         }
     };
 }
@@ -75,7 +73,6 @@ impl From<&str> for RfKeyword {
 }
 
 impl RfKeyword {
-
     #[inline]
     fn from_sym(i: &str) -> Option<Self> {
         transform_rf_keyword!(i, "hi", RfKeyword::Hi);
@@ -92,7 +89,7 @@ impl RfKeyword {
 }
 
 #[derive(Debug, Clone)]
-pub struct Symbol (pub String, pub u64);
+pub struct Symbol(pub String, pub u64);
 
 #[derive(Debug, Clone)]
 pub struct Register(u8);
@@ -144,18 +141,17 @@ impl Register {
             vec!["x29", "t4"],
             vec!["x30", "t5"],
             vec!["x31", "t6"],
-            ];
+        ];
         for (line, item) in record.iter().enumerate() {
             for reg in item.iter() {
                 if i == *reg {
                     return Some(Register::new(line as u8));
-                } 
+                }
             }
         }
         None
     }
 }
-
 
 impl From<&str> for Register {
     fn from(i: &str) -> Self {
@@ -164,4 +160,4 @@ impl From<&str> for Register {
 }
 
 #[derive(Debug, Clone)]
-pub struct Label (pub Symbol);
+pub struct Label(pub Symbol);
