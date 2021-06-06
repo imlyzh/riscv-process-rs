@@ -296,3 +296,7 @@ impl Node {
         }
     }
 }
+
+pub fn transform_to(i: Vec<RawNode>) -> Vec<Node> {
+    i.into_iter().flat_map(RawNode::transform_to).collect()
+}
