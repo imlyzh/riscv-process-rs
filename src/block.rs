@@ -17,18 +17,18 @@ pub struct PosInfo {
 }
 
 #[derive(Debug, Clone)]
-pub struct BlockMap(pub Vec<LabelInfo>, pub Vec<PosInfo>, Vec<RawNode>);
+pub struct BlockMap(pub Vec<LabelInfo>, pub Vec<PosInfo>, Vec<Node>);
 
-pub fn block(i: Vec<RawNode>) -> BlockMap {
+pub fn block(i: Vec<Node>) -> BlockMap {
     let mut label_info_table: Vec<LabelInfo> = vec![];
     let mut line_info_table: Vec<PosInfo> = vec![];
-    let mut inst_table: Vec<RawNode> = vec![];
+    let mut inst_table: Vec<Node> = vec![];
     let mut offset: usize = 0;
     let mut label_record: Option<(String, usize)> = None;
     let mut pos_record: Option<(usize, usize, usize, usize)> = None;
     for i in i {
         match i {
-            RawNode::Label(Label(Symbol(i, _))) => {
+            Node::Label(Label(Symbol(i, _))) => {
                 if let Some((label, start)) = label_record.clone() {
                     label_info_table.push(LabelInfo {
                         label_name: label,
@@ -44,7 +44,7 @@ pub fn block(i: Vec<RawNode>) -> BlockMap {
                 }
                 label_record = Some((i, offset));
             }
-            RawNode::PseudoOps(Pseudo(op, exprs)) if op.as_str() == "loc" => {
+            Node::PseudoOps(Pseudo(op, exprs)) if op.as_str() == "loc" => {
                 // assert_eq!(exprs.len(), 3);
                 if let Some((file, line, col, start)) = pos_record.clone() {
                     line_info_table.push(PosInfo {
