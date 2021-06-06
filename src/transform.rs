@@ -1,7 +1,6 @@
 use crate::node::*;
 use crate::utils::*;
 
-
 impl PseudoInst {
     fn transform_to(self) -> Vec<Instruction> {
         let Instruction(i, exprs) = self.0;
@@ -22,9 +21,7 @@ impl PseudoInst {
                 Instruction(i, vec![rd.clone(), combinat_offset(sym, rd)]),
             ];
         }
-        if ["sb", "sh", "sw", "sd",
-            "flw", "fld",
-            "fsw", "fsd"].contains(&&*i) {
+        if ["sb", "sh", "sw", "sd", "flw", "fld", "fsw", "fsd"].contains(&&*i) {
             let rd = next_(&mut exprs);
             let sym = next_(&mut exprs);
             let rt = next_(&mut exprs);
@@ -34,23 +31,27 @@ impl PseudoInst {
             ];
         }
         if i == "nop" {
-            return vec![
-                Instruction("addi".to_string(), vec![
-                    create_reg(0),
-                    create_reg(0),
-                    create_imm("0")]),
-            ];
+            return vec![Instruction(
+                "addi".to_string(),
+                vec![create_reg(0), create_reg(0), create_imm("0")],
+            )];
         }
         // li rd, immediate
         if i == "mv" {
             let rd = next_(&mut exprs);
             let rs = next_(&mut exprs);
-            return vec![Instruction("addi".to_string(), vec![rd, rs, create_imm("0")])];
+            return vec![Instruction(
+                "addi".to_string(),
+                vec![rd, rs, create_imm("0")],
+            )];
         }
         if i == "not" {
             let rd = next_(&mut exprs);
             let rs = next_(&mut exprs);
-            return vec![Instruction("xori".to_string(), vec![rd, rs, create_imm("-1")])];
+            return vec![Instruction(
+                "xori".to_string(),
+                vec![rd, rs, create_imm("-1")],
+            )];
         }
         if i == "neg" {
             let rd = next_(&mut exprs);
@@ -65,12 +66,18 @@ impl PseudoInst {
         if i == "sext.w" {
             let rd = next_(&mut exprs);
             let rs = next_(&mut exprs);
-            return vec![Instruction("addiw".to_string(), vec![rd, rs, create_imm("0")])];
+            return vec![Instruction(
+                "addiw".to_string(),
+                vec![rd, rs, create_imm("0")],
+            )];
         }
         if i == "seqz" {
             let rd = next_(&mut exprs);
             let rs = next_(&mut exprs);
-            return vec![Instruction("sltiu".to_string(), vec![rd, rs, create_imm("1")])];
+            return vec![Instruction(
+                "sltiu".to_string(),
+                vec![rd, rs, create_imm("1")],
+            )];
         }
         if i == "snez" {
             let rd = next_(&mut exprs);
@@ -94,16 +101,17 @@ impl PseudoInst {
     }
 }
 
-
 impl RawNode {
     fn transform_to(self) -> Vec<Node> {
         match self {
             RawNode::Label(v) => vec![Node::Label(v)],
             RawNode::Inst(v) => vec![Node::Inst(v)],
             RawNode::PseudoOps(v) => vec![Node::PseudoOps(v)],
-            RawNode::PseudoInst(v) => v.transform_to().into_iter()
-                .map(Node::Inst)
-                .collect(),
+            RawNode::PseudoInst(v) => v.transform_to().into_iter().map(Node::Inst).collect(),
         }
     }
+}
+
+pub fn transform_to(i: Vec<RawNode>) -> Vec<Node> {
+    i.into_iter().flat_map(RawNode::transform_to).collect()
 }
