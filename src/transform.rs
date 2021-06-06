@@ -286,13 +286,13 @@ impl PseudoInst {
     }
 }
 
-impl RawNode {
+impl Node {
     fn transform_to(self) -> Vec<Node> {
         match self {
-            RawNode::Label(v) => vec![Node::Label(v)],
-            RawNode::Inst(v) => vec![Node::Inst(v)],
-            RawNode::PseudoOps(v) => vec![Node::PseudoOps(v)],
-            RawNode::PseudoInst(v) => v.transform_to().into_iter().map(Node::Inst).collect(),
+            Node::Label(v) => vec![Node::Label(v)],
+            Node::Inst(v) => vec![Node::Inst(v)],
+            Node::PseudoOps(v) => vec![Node::PseudoOps(v)],
+            Node::PseudoInst(v) => v.transform_to().into_iter().map(Node::Inst).collect(),
         }
     }
 }

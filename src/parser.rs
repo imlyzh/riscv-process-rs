@@ -151,21 +151,21 @@ impl ParseFrom<Rule> for Label {
     }
 }
 
-impl ParseFrom<Rule> for RawNode {
+impl ParseFrom<Rule> for Node {
     fn parse_from(pair: Pair<Rule>) -> Self {
         debug_assert_eq!(pair.as_rule(), Rule::line);
         let pair = pair.into_inner().next().unwrap();
         match pair.as_rule() {
-            Rule::inst => RawNode::Inst(Instruction::parse_from(pair)),
-            Rule::pseudo_inst => RawNode::PseudoInst(PseudoInst::parse_from(pair)),
-            Rule::pseudo => RawNode::PseudoOps(Pseudo::parse_from(pair)),
-            Rule::label => RawNode::Label(Label::parse_from(pair)),
+            Rule::inst => Node::Inst(Instruction::parse_from(pair)),
+            Rule::pseudo_inst => Node::PseudoInst(PseudoInst::parse_from(pair)),
+            Rule::pseudo => Node::PseudoOps(Pseudo::parse_from(pair)),
+            Rule::label => Node::Label(Label::parse_from(pair)),
             _ => unreachable!(),
         }
     }
 }
 
-pub fn parse(i: &str) -> Result<Vec<RawNode>, Error<Rule>> {
+pub fn parse(i: &str) -> Result<Vec<Node>, Error<Rule>> {
     let r: Result<Vec<Pairs<Rule>>, Error<Rule>> = i
         .split('\n')
         .map(str::trim)
@@ -176,7 +176,7 @@ pub fn parse(i: &str) -> Result<Vec<RawNode>, Error<Rule>> {
         .into_iter()
         .flatten()
         .filter(|pair| pair.clone().into_inner().next().is_some())
-        .map(RawNode::parse_from)
+        .map(Node::parse_from)
         .collect();
     Ok(r)
 }

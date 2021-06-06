@@ -1,12 +1,6 @@
-#[derive(Debug, Clone)]
-pub enum Node {
-    Label(Label),
-    Inst(Instruction),
-    PseudoOps(Pseudo),
-}
 
 #[derive(Debug, Clone)]
-pub enum RawNode {
+pub enum Node {
     Label(Label),
     Inst(Instruction),
     PseudoInst(PseudoInst),
