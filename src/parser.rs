@@ -42,6 +42,7 @@ impl ParseFrom<Rule> for Rf {
 impl ParseFrom<Rule> for Symbol {
     fn parse_from(pair: Pair<Rule>) -> Self {
         debug_assert_eq!(pair.as_rule(), Rule::symbol);
+        println!("out: {:?}", pair);
         let pair = pair.into_inner().next().unwrap();
         match pair.as_rule() {
             Rule::num => Self(pair.as_str().to_string(), 0),

@@ -1,5 +1,8 @@
+use serde::{Deserialize, Serialize};
+
 
 #[derive(Debug, Clone)]
+#[derive(Serialize, Deserialize)]
 pub enum Node {
     Label(Label),
     Inst(Instruction),
@@ -7,39 +10,54 @@ pub enum Node {
     PseudoOps(Pseudo),
 }
 
-#[derive(Debug, Clone)]
-pub struct Pseudo(pub String, pub Vec<Expr>);
 
 #[derive(Debug, Clone)]
+#[derive(Serialize, Deserialize)]
+pub struct Pseudo(pub String, pub Vec<Expr>);
+
+
+#[derive(Debug, Clone)]
+#[derive(Serialize, Deserialize)]
 pub enum Expr {
     Str(String),
     Num(i64),
     Sym(String),
 }
 
+
 #[derive(Debug, Clone)]
+#[derive(Serialize, Deserialize)]
 pub struct PseudoInst(pub Instruction);
 
-#[derive(Debug, Clone)]
-pub struct Instruction(pub String, pub Vec<InstExpr>);
 
 #[derive(Debug, Clone)]
+#[derive(Serialize, Deserialize)]
+pub struct Instruction(pub String, pub Vec<InstExpr>);
+
+
+#[derive(Debug, Clone)]
+#[derive(Serialize, Deserialize)]
 pub enum InstExpr {
     Reg(Register),
     RealTimeOffset(Offset),
 }
 
+
 #[derive(Debug, Clone)]
+#[derive(Serialize, Deserialize)]
 pub enum Offset {
     Rf(Rf, Option<Register>),
     Imm(Symbol, Option<Register>),
 }
 
+
 #[derive(Debug, Clone)]
+#[derive(Serialize, Deserialize)]
 pub struct Rf(pub RfKeyword, pub Symbol);
 
-#[repr(C)]
+
 #[derive(Debug, Clone)]
+#[derive(Serialize, Deserialize)]
 pub enum RfKeyword {
     Hi,
     Lo,
@@ -51,6 +69,22 @@ pub enum RfKeyword {
     TlsIePcrelHiS,
     TlsGdPcrelHis,
 }
+
+
+#[derive(Debug, Clone)]
+#[derive(Serialize, Deserialize)]
+pub struct Symbol(pub String, pub u64);
+
+
+#[derive(Debug, Clone)]
+#[derive(Serialize, Deserialize)]
+pub struct Register(u8);
+
+
+#[derive(Debug, Clone)]
+#[derive(Serialize, Deserialize)]
+pub struct Label(pub Symbol);
+
 
 macro_rules! transform_rf_keyword {
     ($i: expr, $s: expr, $r: expr) => {
@@ -81,12 +115,6 @@ impl RfKeyword {
         None
     }
 }
-
-#[derive(Debug, Clone)]
-pub struct Symbol(pub String, pub u64);
-
-#[derive(Debug, Clone)]
-pub struct Register(u8);
 
 impl Register {
     #[inline]
@@ -152,6 +180,3 @@ impl From<&str> for Register {
         Register::from_sym(i).expect("invalid riscv register symbol")
     }
 }
-
-#[derive(Debug, Clone)]
-pub struct Label(pub Symbol);

@@ -1,6 +1,9 @@
+use serde::{Deserialize, Serialize};
 use crate::{node::*, utils::get_num};
 
+
 #[derive(Debug, Clone)]
+#[derive(Serialize, Deserialize)]
 pub struct LabelInfo {
     label_name: String,
     start: usize,
@@ -8,6 +11,7 @@ pub struct LabelInfo {
 }
 
 #[derive(Debug, Clone)]
+#[derive(Serialize, Deserialize)]
 pub struct PosInfo {
     file: usize,
     line: usize,
@@ -17,7 +21,9 @@ pub struct PosInfo {
 }
 
 #[derive(Debug, Clone)]
+#[derive(Serialize, Deserialize)]
 pub struct BlockMap(pub Vec<LabelInfo>, pub Vec<PosInfo>, Vec<Node>);
+
 
 pub fn block(i: Vec<Node>) -> BlockMap {
     let mut label_info_table: Vec<LabelInfo> = vec![];
