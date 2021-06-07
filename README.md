@@ -9,6 +9,8 @@ This is a RISC-V assembly process library.
 
 - [x] Rust struct
 - [x] Parser
+- [x] Block
 - [ ] Pseudo instruction transform to instruction
+- [ ] To native code
 - [ ] To json
 - [ ] From Python call
