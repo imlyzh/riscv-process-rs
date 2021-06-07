@@ -6,11 +6,13 @@ mod utils;
 
 use parser::parse;
 use block::block;
+use serde_json::to_string;
 
 fn main() {
-    let s = include_str!("../test/test1.asm");
+    let s = include_str!("../test/test.asm");
     let r = parse(s);
     let r = r.unwrap();
     let r = block(r);
-    println!("{:?}", r);
+    let r = serde_json::to_string(&r).unwrap();
+    println!("{}", r);
 }

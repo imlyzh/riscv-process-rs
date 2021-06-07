@@ -35,29 +35,32 @@ float_load = @{ "fl" ~ ("w"|"d") }
 
 float_store = @{ "fs" ~ ("w"|"d") }
 
-generic_pseudo_inst = {
+generic_pseudo_inst = ${
     pcode_keyword ~ (inst_expr ~ ("," ~ inst_expr)*)?
 }
 
 pseudo =
-    { file_pseudo
+    { emmm_pseudo
     | generic_pseudo
     | other_pseudo
 }
 
-file_pseudo = {
-    "." ~ file_ ~ expr ~ expr?
+emmm_pseudo = ${
+    "." ~ emmm_ ~ (WHITESPACE+ ~ expr ~ (WHITESPACE+ ~ expr)*)?
 }
 
-generic_pseudo = {
-    "." ~ generic_pseudo_ops ~ (expr ~ ("," ~ expr)*)?
+generic_pseudo = ${
+    "." ~ generic_pseudo_ops ~ (WHITESPACE+ ~ expr ~ (WHITESPACE* ~ "," ~ WHITESPACE* ~ expr)*)?
 }
 
 other_pseudo = {
-    "." ~ sym ~ (expr ~ ("," ~ expr)*)?
+    "." ~ sym ~ (WHITESPACE+ ~ expr ~ (WHITESPACE* ~ "," ~ WHITESPACE+ ~ expr)*)?
 }
 
-file_ = ${ "file" }
+emmm_ = @
+    { "file"
+    | "loc"
+    }
 
 W = @
 	{ " "
@@ -83,11 +86,7 @@ rf = {
 symbol = { num | sym }
 
 sym = {
-	r_sym ~ (offset_op ~ num)?
-}
-
-offset_op = {
-	("+"|"-")
+	r_sym ~ ("+" ~ num)?
 }
 
 r_sym = $ { (ASCII_ALPHA_LOWER | "_" | "$" | ".") ~ (ASCII_ALPHANUMERIC | "_" | "$" | ".")* }
