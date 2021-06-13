@@ -10,7 +10,7 @@ This is a RISC-V assembly process library.
 - [x] Rust struct
 - [x] Parser
 - [x] Block
+- [x] To json
+- [ ] From Python call
 - [ ] Pseudo instruction transform to instruction
 - [ ] To native code
-- [ ] To json
-- [ ] From Python call
