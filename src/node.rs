@@ -20,7 +20,7 @@ pub struct Pseudo(pub String, pub Vec<Expr>);
 #[derive(Serialize, Deserialize)]
 pub enum Expr {
     Str(String),
-    Num(i64),
+    Num(String),
     Sym(String),
 }
 
@@ -121,11 +121,6 @@ impl Register {
     pub fn new(i: u8) -> Self {
         assert!(i < 32);
         Register(i)
-    }
-
-    #[inline]
-    pub fn get_reg_num(&self) -> u8 {
-        self.0
     }
 
     #[inline]
