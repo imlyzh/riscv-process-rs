@@ -9,7 +9,7 @@ use crate::parser::parse;
 use crate::block::block;
 
 #[pymodule]
-fn rprpy(py: Python, m: &PyModule) -> PyResult<()> {
+pub fn rprlib(_py: Python, m: &PyModule) -> PyResult<()> {
     #[pyfn(m, "get_nodes")]
     fn get_nodes(_py: Python, i: &str) -> PyResult<String> {    
         let r = parse(i);

@@ -11,6 +11,6 @@ This is a RISC-V assembly process library.
 - [x] Parser
 - [x] Block
 - [x] To json
-- [ ] From Python call
+- [x] From Python call
 - [ ] Pseudo instruction transform to instruction
 - [ ] To native code
