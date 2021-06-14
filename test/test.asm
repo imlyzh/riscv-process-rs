@@ -1,5 +1,7 @@
     .equ	CONSTANT, 0xdeadbeef
     .equ	UART_BASE, 0x40003080
+    
+114514: #abaaba
 
 loop:
     j loop

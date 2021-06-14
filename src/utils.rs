@@ -7,9 +7,25 @@ pub fn next_(i: &mut Iter<InstExpr>) -> InstExpr {
 }
 
 #[inline]
-pub fn get_num(i: &Expr) -> i64 {
+pub fn get_num(i: &Expr) -> String {
     match i {
-        Expr::Num(i) => *i,
+        Expr::Num(i) => i.clone(),
+        _ => unreachable!("What is {:?}?", i),
+    }
+}
+
+#[inline]
+pub fn get_str(i: &Expr) -> String {
+    match i {
+        Expr::Str(i) => i.clone(),
+        _ => unreachable!("What is {:?}?", i),
+    }
+}
+
+#[inline]
+pub fn get_sym(i: &Expr) -> String {
+    match i {
+        Expr::Sym(i) => i.clone(),
         _ => unreachable!("What is {:?}?", i),
     }
 }

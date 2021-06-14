@@ -40,8 +40,8 @@ generic_pseudo_inst = ${
 }
 
 pseudo =
-    { emmm_pseudo
-    | generic_pseudo
+    { generic_pseudo
+    | emmm_pseudo
     | other_pseudo
 }
 
@@ -50,11 +50,11 @@ emmm_pseudo = ${
 }
 
 generic_pseudo = ${
-    "." ~ generic_pseudo_ops ~ (WHITESPACE+ ~ expr ~ (WHITESPACE* ~ "," ~ WHITESPACE* ~ expr)*)?
+    "." ~ generic_pseudo_ops ~ (WHITESPACE+ ~ expr ~ (WHITESPACE* ~ ","? ~ WHITESPACE* ~ expr)*)?
 }
 
-other_pseudo = {
-    "." ~ sym ~ (WHITESPACE+ ~ expr ~ (WHITESPACE* ~ "," ~ WHITESPACE+ ~ expr)*)?
+other_pseudo = ${
+    "." ~ sym ~ (WHITESPACE+ ~ expr ~ (WHITESPACE* ~ ","? ~ WHITESPACE* ~ expr)*)?
 }
 
 emmm_ = @
@@ -89,7 +89,7 @@ sym = {
 	r_sym ~ ("+" ~ num)?
 }
 
-r_sym = $ { (ASCII_ALPHA_LOWER | "_" | "$" | ".") ~ (ASCII_ALPHANUMERIC | "_" | "$" | ".")* }
+r_sym = $ { (ASCII_ALPHA | "_" | "@" | "$" | ".") ~ (ASCII_ALPHANUMERIC | "_" | "@" | "$" | ".")* }
 
 ignore =
 	{ WHITESPACE
@@ -107,23 +107,24 @@ extend_char = @{
 
 
 
-num = @{ ("+" | "-")? ~ "0x"? ~ ASCII_DIGIT+ ~ "b"? }
+// num = @{ ("+" | "-")? ~ "0x"? ~ ASCII_DIGIT+ ~ "b"? }
 
-//num = $ { number_dec
-//               | number_oct
-//               | number_bin
-//               | number_hex
-//               }
+num = @
+    { number_oct
+    | number_bin
+    | number_hex
+    | number_dec
+    }
 
-number_dec = _ { ("+" | "-")? ~ ASCII_DIGIT+ }
+number_dec = @{ ("+" | "-")? ~ ASCII_DIGIT+ }
 
-number_oct = _ { ("+" | "-")? ~ "0o" ~ ASCII_OCT_DIGIT+ }
+number_oct = @{ ("+" | "-")? ~ "0o" ~ ASCII_OCT_DIGIT+ }
 
-number_hex = _ { ("+" | "-")? ~ "0x" ~ ASCII_HEX_DIGIT+ }
+number_hex = @{ ("+" | "-")? ~ "0x" ~ ASCII_HEX_DIGIT+ }
 
-number_bin = _ { ("+" | "-")? ~ "0b" ~ ASCII_BIN_DIGIT+ }
+number_bin = @{ ("+" | "-")? ~ "0b" ~ ASCII_BIN_DIGIT+ }
 
-str = {
+str = @{
     "\"" ~ (!"\"" ~ ANY)+ ~ "\""
 }
 
