@@ -1,10 +1,5 @@
 use crate::node::*;
-use std::slice::Iter;
 
-#[inline]
-pub fn next_(i: &mut Iter<InstExpr>) -> InstExpr {
-    i.next().unwrap().clone()
-}
 
 #[inline]
 pub fn get_num(i: &Expr) -> String {
@@ -28,6 +23,14 @@ pub fn get_sym(i: &Expr) -> String {
         Expr::Sym(i) => i.clone(),
         _ => unreachable!("What is {:?}?", i),
     }
+}
+
+/*
+use std::slice::Iter;
+
+#[inline]
+pub fn next_(i: &mut Iter<InstExpr>) -> InstExpr {
+    i.next().unwrap().clone()
 }
 
 #[inline]
@@ -56,3 +59,4 @@ pub fn create_reg(i: u8) -> InstExpr {
 pub fn create_imm(i: &str) -> InstExpr {
     InstExpr::RealTimeOffset(Offset::Imm(Symbol(i.to_string(), 0), None))
 }
+// */

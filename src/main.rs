@@ -3,7 +3,7 @@ mod parser;
 mod transform;
 mod block;
 mod utils;
-mod analysis;
+// mod analysis;
 
 use std::{convert::identity, env, fs, io::{Read, Write}};
 

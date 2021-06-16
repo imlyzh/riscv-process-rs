@@ -55,7 +55,7 @@ pub fn block(i: Vec<Node>) -> BlockMap {
                     end: offset,
                 });
             }
-            if let Some((file, line, col, start)) = pos_record.clone() {
+            if let Some((file, line, col, start)) = pos_record {
                 pos_table.push(PosInfo {
                 file, line, col, start,
                     end: offset,
@@ -66,7 +66,7 @@ pub fn block(i: Vec<Node>) -> BlockMap {
         }
         if let Node::PseudoOps(Pseudo(op, exprs)) = i.clone() {
             if op.as_str() == "loc" {
-                if let Some((file, line, col, start)) = pos_record.clone() {
+                if let Some((file, line, col, start)) = pos_record {
                     let end = offset;
                     pos_table.push(PosInfo { file, line, col, start, end });
                 }
