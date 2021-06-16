@@ -1,5 +1,8 @@
+/*
+
 use crate::node::*;
 use crate::utils::*;
+
 
 impl PseudoInst {
     fn transform_to(self) -> Vec<Instruction> {
@@ -202,7 +205,7 @@ impl PseudoInst {
         }
         // not implement float instructions now
         if i.starts_with("b") {
-            if i.ends_with("z") {
+            if i.ends_with('z') {
                 let rs = next_(&mut exprs);
                 let offset = next_(&mut exprs);
                 return match i.as_str() {
@@ -296,3 +299,5 @@ impl Node {
         }
     }
 }
+
+//  */
