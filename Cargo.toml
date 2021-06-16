@@ -1,9 +1,11 @@
 [package]
 name = "riscv-process-rs"
 license = "MIT"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Lyzh <enterindex@gmail.com>"]
 edition = "2018"
+readme = "README.md"
+repository = "https://github.com/imlyzh/riscv-process-rs"
 
 description = "A RISC-V assembly parser and process library."
 
